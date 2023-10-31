@@ -12,9 +12,10 @@ type Decomposition struct {
 }
 
 func Decompose(n uint) (*Decomposition, error) {
-	if n > math.MaxUint32 {
-		return nil, fmt.Errorf("limit exceeded : must provide a number less than %d", math.MaxUint32)
+	if n > math.MaxUint32 || n < 2 {
+		return nil, fmt.Errorf("must provide a number between 2 and %d", math.MaxUint32)
 	}
+
 	p := &Decomposition{N: n}
 	pd := make(map[uint]uint)
 outer:
