@@ -1,6 +1,7 @@
 package number
 
 import (
+	"fmt"
 	"math"
 	"slices"
 )
@@ -8,6 +9,30 @@ import (
 type Decomposition struct {
 	N  uint
 	PD map[uint]uint
+}
+
+func Decompose(n uint) (*Decomposition, error) {
+	if n > math.MaxUint32 {
+		return nil, fmt.Errorf("limit exceeded : %d > %d", n, math.MaxUint32)
+	}
+	p := &Decomposition{N: n}
+	pd := make(map[uint]uint)
+outer:
+	for n > 1 {
+		for _, pn := range primesList {
+			if n%pn == 0 {
+				pd[pn]++
+				n /= pn
+				break
+			}
+			if pn == primesList[len(primesList)-1] {
+				pd[n]++
+				break outer
+			}
+		}
+	}
+	p.PD = pd
+	return p, nil
 }
 
 func (d Decomposition) IsPrime() bool {
@@ -55,26 +80,6 @@ func (d Decomposition) Divisors() []uint {
 
 	slices.Sort(divisors)
 	return divisors
-}
-
-func Decompose(n uint) Decomposition {
-	n0 := n
-	pd := make(map[uint]uint)
-outer:
-	for n > 1 {
-		for _, pn := range primesList {
-			if n%pn == 0 {
-				pd[pn]++
-				n /= pn
-				break
-			}
-			if pn == primesList[len(primesList)-1] {
-				pd[n]++
-				break outer
-			}
-		}
-	}
-	return Decomposition{N: n0, PD: pd}
 }
 
 func productOfTwoSlices(s1, s2 []uint) []uint {
